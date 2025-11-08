@@ -1,5 +1,7 @@
 package entities;
 
+import entities.Exceptions.InvalidDateException;
+
 /**
  * Predstavlja rezervaciju za usera.
  */
