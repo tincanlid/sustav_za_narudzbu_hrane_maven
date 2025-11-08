@@ -1,6 +1,8 @@
 package entities;
 
 
+import entities.Exceptions.NegativePriceException;
+
 /**
  * Predstavlja item u sustavu.
  * Koristi Builder dizajn obrazac za izgradnju objekata itema.

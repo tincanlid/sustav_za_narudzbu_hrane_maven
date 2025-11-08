@@ -1,4 +1,4 @@
-package entities;
+package entities.Exceptions;
 
 /**
  * Iznimka koja se baca kada se ocekuje da je cijena pozitivnog broja.

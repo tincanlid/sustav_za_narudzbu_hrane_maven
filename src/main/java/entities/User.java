@@ -1,4 +1,9 @@
 package entities;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  * Predstavlja usere u sustavu.
  *
@@ -40,4 +45,26 @@ public class User extends Person{
         return "User: " + super.toString() + ", email =" + email;
     }
 
+
+    /**
+     * Dijeli usere na punoljetne i maloljetne.
+     *
+     * @param users Users lista
+     * @return
+     */
+    public static Map<Boolean, List<User>> podjelaPoDobi(List<User> users) {
+        return users.stream()
+                .collect(Collectors.partitioningBy(u -> u.getDob() >= 18));
+    }
+
+    /**
+     * Grupira usere po godinama.
+     *
+     * @param users Users lista
+     * @return
+     */
+    public static Map<Integer, List<User>> grupirajPoDobi(List<User> users) {
+        return users.stream()
+                .collect(Collectors.groupingBy(User::getDob));
+    }
 }

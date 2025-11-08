@@ -1,11 +1,14 @@
 package app;
 
 import entities.*;
+import entities.Exceptions.*;
 import entities.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Gatherers;
 
 /**
  * Sluzi za pokretanje programa!
@@ -26,11 +29,13 @@ public class Main {
             Scanner scanner = new Scanner(System.in);
 
 
-            User[] users = new User[BROJ_OBJEKATA];
-            Admin[] admins = new Admin[BROJ_OBJEKATA];
-            Item[] items = new Item[BROJ_OBJEKATA];
-            Booking[] bookings = new Booking[BROJ_OBJEKATA];
-            Record[] records = new Record[BROJ_OBJEKATA];
+
+            List<User> users = new ArrayList<>();
+            List<Item> items = new ArrayList<>();
+            List<Admin> admins = new ArrayList<>();
+            List<Booking> bookings = new ArrayList<>();
+            List<Record> records = new ArrayList<>();
+
 
             System.out.println("Unos usera - ");
             log.info("Unos usera - ");
@@ -38,7 +43,7 @@ public class Main {
 
             try {
 
-                for (int i = 0; i < users.length; i++) {
+                for (int i = 0; i < BROJ_OBJEKATA; i++) {
                     log.debug("Unos usera broj " + (i + 1));
 
                     System.out.println("Ime: ");
@@ -65,15 +70,15 @@ public class Main {
                         throw new InvalidInputException("Email mora sadržavati '@'!");
                     }
 
-                    users[i] = new User(i + 1, ime, dob, email);
-                    log.debug("User dodan: " + users[i]);
+                    users.add(new User(i + 1, ime, dob, email));
+                    log.debug("User dodan: " + users.get(i));
                     System.out.println();
                 }
 
                 System.out.println("Unos itema - ");
                 log.info("Unos itema - : ");
 
-                for (int i = 0; i < items.length; i++) {
+                for (int i = 0; i < BROJ_OBJEKATA; i++) {
                     log.debug("Unos artikla broj " + (i + 1));
 
                     System.out.println("Naziv itema: ");
@@ -92,40 +97,40 @@ public class Main {
                     double cijena = scanner.nextDouble();
                     scanner.nextLine();
 
-                    items[i] = new Item.Builder().setIme(naziv).setCijena(cijena).build();
-                    log.debug("Item dodan: " + items[i]);
+                    items.add(new Item.Builder().setIme(naziv).setCijena(cijena).build());
+                    log.debug("Item dodan: " + items.get(i));
                     System.out.println();
                 }
 
-                if (items == null || items.length == 0 || items[0] == null) {
+                if (items.isEmpty()) {
                     throw new EmptyListException("Nema unesenih artikala — ne može se kreirati narudzba!");
                 }
 
                 System.out.println("Unos bookinga - ");
                 log.info("Unos bookinga - ");
 
-                for (int i = 0; i < bookings.length; i++) {
+                for (int i = 0; i < BROJ_OBJEKATA; i++) {
                     System.out.println("Datum: ");
                     log.info("Datum: ");
                     String datum = scanner.nextLine();
 
-                    bookings[i] = new Booking(i + 1, datum);
-                    log.debug("Booking stvoren: " + bookings[i]);
+                    bookings.add(new Booking(i + 1, datum));
+                    log.debug("Booking stvoren: " + bookings.get(i));
                 }
 
                 System.out.println("Unos narudzbi - ");
                 log.info("Unos narudzbi - ");
 
-                for (int i = 0; i < records.length; i++) {
-                    records[i] = new Record(users[i], items[i], bookings[i]);
-                    log.debug("Record dodan: " + records[i]);
+                for (int i = 0; i < BROJ_OBJEKATA; i++) {
+                    records.add(new Record(users.get(i), items.get(i), bookings.get(i), OrderStatus.NOVA));
+                    log.debug("Record dodan: " + records.get(i));
                 }
 
                 // polje osoba sadrzi usere i admine
                 Person[] osobe = new Person[BROJ_OBJEKATA * 2];
                 for (int i = 0; i < BROJ_OBJEKATA; i++) {
-                    osobe[i] = users[i];
-                    osobe[i + BROJ_OBJEKATA] = admins[i];
+                    osobe[i] = users.get(i);
+                    osobe[i + BROJ_OBJEKATA] = admins.get(i);
                 }
 
                 System.out.println("Pretrazivanje usera - ");
@@ -135,10 +140,10 @@ public class Main {
                 String imePrezime = scanner.nextLine();
                 boolean imaUsera = false;
 
-                for (int i = 0; i < users.length; i++) {
-                    if (users[i].getIme().equals(imePrezime)) {
-                        System.out.println("User " + users[i].getIme() + " postoji");
-                        log.info("User " + users[i].getIme() + " postoji");
+                for (int i = 0; i < BROJ_OBJEKATA; i++) {
+                    if (users.get(i).getIme().equals(imePrezime)) {
+                        System.out.println("User " + users.get(i).getIme() + " postoji");
+                        log.info("User " + users.get(i).getIme() + " postoji");
                         imaUsera = true;
                     }
                 }
@@ -147,33 +152,44 @@ public class Main {
                     log.warn("User " + imePrezime + " ne postoji");
                 }
 
+                // sortiranje itema
+                System.out.println("Sortirani item po cijeni (uzlazno): ");
+                items.sort(Comparator.comparingDouble(Item::getCijena));
+                items.forEach(item -> System.out.println(item.getNaziv() + " - " + item.getCijena() + " EUR"));
+
+                System.out.println("Sortirani item po cijeni (silazno): ");
+                items.sort(Comparator.comparingDouble(Item::getCijena).reversed());
+                items.forEach(item -> System.out.println(item.getNaziv() + " - " + item.getCijena() + " EUR"));
+
+                // sequenced collection
+                System.out.println("Prvi i zadnji korisnik u listi:");
+                System.out.println("Prvi: " + users.getFirst().getIme());
+                System.out.println("Zadnji: " + users.getLast().getIme());
+
+                // Stream Gatherers
+                List<Double> zbrojeneCijene = items.stream()
+                        .map(Item::getCijena)
+                        .gather(java.util.stream.Gatherers.windowFixed(2))
+                        .map(grupa -> grupa.stream().reduce(0.0, Double::sum))
+                        .toList();
+
+                System.out.println("Zbrojene cijene po grupama: " + zbrojeneCijene);
+
+                // partitioningBy i groupingBy
+                Map<Boolean, List<User>> podjela = User.podjelaPoDobi(users);
+                Map<OrderStatus, List<Record>> grupirano = Record.grupirajPoStatusu(records);
+
                 System.out.println("Najskuplji i najjeftiniji item - ");
                 log.info("Najskuplji i najjeftiniji item - ");
 
-                if (items.length > 0) {
-                    Item najskuplji = items[0];
-                    Item najjeftiniji = items[0];
-
-                    int i = 1;
-                    do {
-                        log.trace("Provjera itema " + (i+1) + ": " + items[i]);
-                        if (items[i].getCijena() > najskuplji.getCijena()) {
-                            najskuplji = items[i];
-                        }
-                        if (items[i].getCijena() < najjeftiniji.getCijena()) {
-                            najjeftiniji = items[i];
-                        }
-                        i++;
-                    } while (i < items.length);
+                    Item najskuplji = items.stream().max(Comparator.comparingDouble(Item::getCijena)).orElseThrow();
+                    Item najjeftiniji = items.stream().min(Comparator.comparingDouble(Item::getCijena)).orElseThrow();
 
                     System.out.println("Najskuplji item: " + najskuplji.getNaziv() + " " + najskuplji.getCijena() + " EUR");
                     System.out.println("Najjeftiniji item: " + najjeftiniji.getNaziv() + " " + najjeftiniji.getCijena() + " EUR");
                     log.info("Najskuplji item: " + najskuplji.getNaziv() + " " + najskuplji.getCijena() + " EUR");
                     log.info("Najjeftiniji item: " + najjeftiniji.getNaziv() + " " + najjeftiniji.getCijena() + " EUR");
-                }
-                else {
-                    throw new EmptyListException("Nema itema za usporedbu!");
-                }
+
             } catch (InvalidInputException | InvalidDateException e) {
                 System.out.println("Greška kod unosa: " + e.getMessage());
                 log.error("Greška kod unosa: " + e.getMessage());
@@ -185,6 +201,7 @@ public class Main {
                 log.error("Neočekivana greška: " + e.getMessage());
             } finally {
                 scanner.close();
+                log.info("Zavrsetak programa");
             }
 
         }
