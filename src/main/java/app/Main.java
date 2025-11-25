@@ -6,6 +6,7 @@ import entities.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Gatherers;
@@ -15,7 +16,7 @@ import java.util.stream.Gatherers;
  */
 public class Main {
         private static final int BROJ_OBJEKATA = 2;
-        private static Logger log = LoggerFactory.getLogger(Main.class);
+        private static final Logger log = LoggerFactory.getLogger(Main.class);
 
         /**
          * Glavna metoda gdje aplikacija zapocinje.
@@ -122,7 +123,12 @@ public class Main {
                 log.info("Unos narudzbi - ");
 
                 for (int i = 0; i < BROJ_OBJEKATA; i++) {
-                    records.add(new Record(users.get(i), items.get(i), bookings.get(i), OrderStatus.NOVA));
+                    records.add(new Record(
+                            Optional.ofNullable(users.get(i)),
+                            Optional.ofNullable(items.get(i)),
+                            Optional.ofNullable(bookings.get(i)),
+                            OrderStatus.NOVA
+                    ));
                     log.debug("Record dodan: " + records.get(i));
                 }
 
@@ -147,7 +153,7 @@ public class Main {
                         imaUsera = true;
                     }
                 }
-                if (imaUsera == false) {
+                if (!imaUsera) {
                     System.out.println("User " + imePrezime + " ne postoji");
                     log.warn("User " + imePrezime + " ne postoji");
                 }
@@ -161,10 +167,13 @@ public class Main {
                 items.sort(Comparator.comparingDouble(Item::getCijena).reversed());
                 items.forEach(item -> System.out.println(item.getNaziv() + " - " + item.getCijena() + " EUR"));
 
-                // sequenced collection
+                // sequenced collection (s Optional)
+                Optional<User> prviUser = Optional.of(users.getFirst());
+                Optional<User> zadnjIuser = Optional.of(users.getLast());
+
                 System.out.println("Prvi i zadnji korisnik u listi:");
-                System.out.println("Prvi: " + users.getFirst().getIme());
-                System.out.println("Zadnji: " + users.getLast().getIme());
+                System.out.println("Prvi: " + prviUser.map(User::getIme).orElse("Prazno"));
+                System.out.println("Zadnji: " + zadnjIuser.map(User::getIme).orElse("Prazno"));
 
                 // Stream Gatherers
                 List<Double> zbrojeneCijene = items.stream()
@@ -189,6 +198,28 @@ public class Main {
                     System.out.println("Najjeftiniji item: " + najjeftiniji.getNaziv() + " " + najjeftiniji.getCijena() + " EUR");
                     log.info("Najskuplji item: " + najskuplji.getNaziv() + " " + najskuplji.getCijena() + " EUR");
                     log.info("Najjeftiniji item: " + najjeftiniji.getNaziv() + " " + najjeftiniji.getCijena() + " EUR");
+
+
+                // LAB 5
+                List<User> punoljetni = users.stream()
+                        .filter(user -> user.getDob() >= 18)
+                        .toList();
+                System.out.println("Punoljetni korisnici: " + punoljetni);
+
+                Optional<Double> ukupno = items.stream()
+                        .map(Item::getCijena)
+                        .reduce(Double::sum);
+                System.out.println("Ukupna cijena svih itema: " + ukupno);
+
+                List<Integer> ints = List.of(1, 2, 3);
+                double s = KolUtils.sumNumbers(ints); // producer extends
+
+                List<Object> objs = new ArrayList<>();
+                KolUtils.addAllTo(objs, ints); // destination je super (consumer)
+
+                Pair<Integer> pair = new Pair<>(4, 7);
+                System.out.println("Pair max: " + pair.max());
+
 
             } catch (InvalidInputException | InvalidDateException e) {
                 System.out.println("Greška kod unosa: " + e.getMessage());
