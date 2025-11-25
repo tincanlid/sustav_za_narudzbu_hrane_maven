@@ -1,0 +1,16 @@
+2025-11-04 15:17:04,664 INFO [main] app.Main [Main.java:25] Pokrenut program
+2025-11-04 15:17:04,757 INFO [main] app.Main [Main.java:36] Unos usera - 
+2025-11-04 15:17:04,758 DEBUG [main] app.Main [Main.java:42] Unos usera broj 1
+2025-11-04 15:17:04,759 INFO [main] app.Main [Main.java:45] Ime: 
+2025-11-08 20:13:11,622 INFO [main] app.Main [Main.java:27] Pokrenut program
+2025-11-08 20:13:11,661 INFO [main] app.Main [Main.java:40] Unos usera - 
+2025-11-08 20:13:11,662 DEBUG [main] app.Main [Main.java:46] Unos usera broj 1
+2025-11-08 20:13:11,662 INFO [main] app.Main [Main.java:49] Ime: 
+2025-11-24 20:57:41,022 INFO [main] app.Main [Main.java:28] Pokrenut program
+2025-11-24 20:57:41,060 INFO [main] app.Main [Main.java:41] Unos usera - 
+2025-11-24 20:57:41,061 DEBUG [main] app.Main [Main.java:47] Unos usera broj 1
+2025-11-24 20:57:41,061 INFO [main] app.Main [Main.java:50] Ime: 
+2025-11-24 20:57:48,100 INFO [main] app.Main [Main.java:28] Pokrenut program
+2025-11-24 20:57:48,128 INFO [main] app.Main [Main.java:41] Unos usera - 
+2025-11-24 20:57:48,129 DEBUG [main] app.Main [Main.java:47] Unos usera broj 1
+2025-11-24 20:57:48,130 INFO [main] app.Main [Main.java:50] Ime: 
